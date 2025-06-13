@@ -8,6 +8,7 @@
     "copy-monitors": "yarn build && node dist/index.js copy-monitors",
     "disable-uptime-robot": "yarn build && node dist/index.js disable-uptime-robot",
     "delete-uptime-robot": "yarn build && node dist/index.js delete-uptime-robot",
+    "delete-kuma": "yarn build && node dist/index.js delete-kuma",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

@@ -1,53 +1,112 @@
-# UptimeRobot to Kuma migration
+# 🛠️ UptimeRobot to UptimeKuma Migration Tool (Enhanced Edition)
 
-We migrated from UptimeRobot to UptimeKuma, but there was no fast way to achieve this, so
-we wrote our own small migration helper.
+This tool helps you migrate your monitors from **UptimeRobot** to **UptimeKuma**
+with ease.
 
-## Getting started
+It is based on the original project
+[sandstorm/uptime-robot-to-kuma-helper](https://github.com/sandstorm/uptime-robot-to-kuma-helper),
+but has been **extended, modernized, and updated** for current environments.
 
-Copy the `.env.sample` as `.env` and enter your UptimeRobot API key.
+---
 
-For testing, you can simply start UptimeKuma via Docker:
+## 🚀 What's New in This Version?
 
-```shell
+- ✅ Updated dependencies and compatibility with the latest Node.js & UptimeKuma
+  versions.
+- 🧹 Added command to **delete all monitors from UptimeKuma** (helpful for
+  repeated tests or fresh migrations):
+
+  ```bash
+  yarn delete-kuma
+  ```
+
+  ⚠️ **Warning:** This will permanently remove all monitors from your Kuma
+  instance.
+
+---
+
+## 🧩 How to Use
+
+### 1. Prepare your Environment
+
+Copy the sample environment file:
+
+```bash
+cp .env.sample .env
+```
+
+Then, edit `.env` to include your **UptimeRobot API Key** and **UptimeKuma
+credentials**.
+
+---
+
+### 2. Start a Local UptimeKuma (for testing)
+
+```bash
 docker run --rm -p 3001:3001 --name uptime-kuma louislam/uptime-kuma:1
 ```
 
-Ensure you finished the initial setup (simply open [localhost:3001](localhost:3001) in your browser) and
-updated the credentials in the `.env` file.
+Once it’s running, complete the initial setup at
+[localhost:3001](http://localhost:3001) and ensure login details match those in
+your `.env`.
 
-To start the migration run:
+---
+
+### 3. Run the Migration
 
 ```bash
-# copy all your UptimeRobot monitors to your Kuma installation
+# Step 1: Import your UptimeRobot monitors into UptimeKuma
 yarn copy-monitors
 
-# disable all UptimeRobot monitors
+# Step 2: Disable all UptimeRobot monitors
 yarn disable-uptime-robot
 
-# delete all your monitors from UptimeRobot
-# DANGER!!! This is can not be undone
+# Step 3: (Danger Zone) Delete all UptimeRobot monitors
 yarn delete-uptime-robot
+
+# Step 4: (NEW) Delete all UptimeKuma monitors
+yarn delete-kuma
 ```
 
-## Production Migration
+---
 
-**Important Node:** This migration helper was writen specially for our use-case. So not all UptimeRobot
-scenarios and features are implemented. So no garantie this will work 100% for you.
+## ⚙️ Architecture Overview
 
-**Pro Tipp:** Before migrating, create a default notification that will get used as default.
+### 🟢 UptimeRobot: Easy Export
 
-## Architecture
+UptimeRobot offers a well-documented REST API, which makes fetching monitors
+straightforward.
 
-### Fetching from UptimeRobot
+### 🔴 UptimeKuma: UI Automation
 
-This part was quite easy, because UptimeRobot got a good REST-API to fetch all monitors from
+UptimeKuma does **not** (yet) offer a public API to create monitors. Originally,
+the script used WebSocket injection—this proved unstable and unreliable.
 
-### Creating the monitors in Kuma
+To solve this, we now use **[Playwright](https://playwright.dev/)** to automate
+a real browser session. This ensures consistent monitor creation via the actual
+UptimeKuma UI.
 
-This was the hard part. Currently, Kuma does not provide any form of API. In the first version of this migration
-helper, I tried to hook into the websocket connection of the UI and create monitors that way. This was really instabile
-and resulted in many non-deterministic errors.
+---
 
-For this reason I switched to Playwright. This allows us the remote-control a browser, which will create
-the monitors via the Kuma-UI.
+## ⚠️ Limitations
+
+- This tool was created for specific internal use cases and **may not cover 100%
+  of UptimeRobot features**.
+- Use with caution and test thoroughly before applying to production
+  environments.
+
+---
+
+## 💡 Pro Tips
+
+- Create a **default notification channel** in UptimeKuma _before_ migration. It
+  will be automatically assigned to all imported monitors.
+- Backup your UptimeKuma database before performing destructive operations.
+
+---
+
+## 🤝 Credits
+
+Based on:
+[sandstorm/uptime-robot-to-kuma-helper](https://github.com/sandstorm/uptime-robot-to-kuma-helper)
+Extended & Updated by: \[Your Name or Team Name]
